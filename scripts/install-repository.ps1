@@ -1,4 +1,9 @@
 
+$origdir = (pwd)
+
+cd $PSScriptRoot
+
+
 # where stuff is
 $root = resolve-path "$PSScriptRoot\.."
 $tools = "$root\tools"
@@ -12,6 +17,8 @@ if( test-path $proget )  {
     write-warning "ProGet appears to be installed at '$proget'" 
     write-warning "Uninstall it before calling this script." 
     #  write-error "Aborting installation of repository"
+    
+    cd $origdir 
     return;
 }
 
@@ -19,6 +26,7 @@ if( test-path $proget )  {
 If (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     $CommandLine = $MyInvocation.Line.Replace($MyInvocation.InvocationName, $MyInvocation.MyCommand.Definition)
     Start-Process -FilePath PowerShell.exe -Verb Runas -Wait -WorkingDirectory (pwd)  -ArgumentList "$CommandLine"
+    cd $origdir 
     return 
 }
 
@@ -38,3 +46,4 @@ if ( -not (test-path $installer) )  {
 start-process -wait -filepath $installer -ArgumentList "/S /Edition=Express /EmailAddress=script@mailinator.com /TargetPath=$proget /PackagesPath=$packages /ASPNETTempPath=$temp /port=5555 /UseIntegratedWebServer=true /InstallSqlExpress"
 
 "Done!"
+cd $origdir 
