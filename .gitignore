@@ -1,4 +1,5 @@
 # ignore stuff
 
 /proget/
-/tools/install-proget.exe
+/tools/proget-install.exe
+OneGet.Results.XML
