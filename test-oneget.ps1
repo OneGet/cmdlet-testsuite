@@ -1,4 +1,16 @@
-#placeholder 
+# 
+#  Copyright (c) Microsoft Corporation. All rights reserved. 
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#  http://www.apache.org/licenses/LICENSE-2.0
+#  
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#  
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
@@ -9,20 +21,13 @@ Param(
 $origdir = (pwd)
 cd $PSScriptRoot
 
-
-function new-list {
-    return New-Object "System.Collections.Generic.List``1[string]"
-}
-
-function new-dictionary {
-    return New-Object "System.Collections.Generic.Dictionary``2[System.string,System.Collections.Generic.List``1[string]]"
-}
-
-
-$allDiscoveredTests = new-dictionary
+$allDiscoveredTests = $null
+$T_total = 0
+$T_failed= 0
+$T_succeeded = 0
 
 function Describe {
- param(
+    param(
         [Parameter(Mandatory = $true, Position = 0)]
         [string] $Name,
         $Tags=@(),
@@ -31,7 +36,7 @@ function Describe {
         [ScriptBlock] $Fixture = $(Throw "No test script block is provided. (Have you put the open curly brace on the next line?)")
     )
     if( -not $allDiscoveredTests.ContainsKey( $Tags ) ) {
-        $lst = new-list
+        $lst = New-Object "System.Collections.Generic.List``1[string]"
         $lst.Add( $name )
         $null = $allDiscoveredTests.Add( "$Tags", $lst) 
     } else {
@@ -43,7 +48,7 @@ function Get-TestsByTag{
     param( 
         [string]$testPath
     )
-    $allDiscoveredTests = new-dictionary
+    $allDiscoveredTests = New-Object "System.Collections.Generic.Dictionary``2[System.string,System.Collections.Generic.List``1[string]]"
     
     $null = Get-ChildItem $testPath -Filter "*.Tests.ps1" -Recurse |
         where { -not $_.PSIsContainer } |
@@ -60,9 +65,7 @@ function Get-TestsByTag{
     return $allDiscoveredTests;
 }
 
-$T_total = 0
-$T_failed= 0
-$T_succeeded = 0
+
 
 function output-counts {
     param( 
@@ -107,7 +110,6 @@ function process-results {
 }
 
 try {
-
     switch( $action ) {
         'test' { 
             $failed = $false
@@ -149,7 +151,7 @@ try {
             # Run using the powershell.exe so that the tests will load the OneGet
             # module using the version that gets specified (and not one that
             # may be in this session already)
-            . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -tag common"
+            . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -ExcludeTag pristine"
 
             $failed = (process-results $output) -or $failed
             
