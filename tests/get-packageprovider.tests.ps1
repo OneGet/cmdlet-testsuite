@@ -1,21 +1,11 @@
 # ------------------ OneGet Test  -----------------------------------------
+ipmo "$PSScriptRoot\module-loader.ps1"
 
-<# 
-    OneGet tests should have the $moduleLocation set by the calling script
-    otherwise it will use the default (loading OneGet from the PSModulePath)
-#>
-
-if (-not $env:OneGetModuleTest ) {
-    $env:OneGetModuleTest = "oneget"
-}
-
-echo "Importing OneGet Module from $env:OneGetModuleTest"
-ipmo $env:OneGetModuleTest
 
 # ------------------------------------------------------------------------------
 # Actual Tests:
 
-Describe "get-packageprovider" {
+Describe "get-packageprovider" -tag common {
 
     It "does something useful" {
         $true | should be $false
@@ -23,11 +13,42 @@ Describe "get-packageprovider" {
 }
 
 
-Describe "happy" {
 
+Describe "happy" -tag common {
+
+    # make sure that oneget is loaded
+    import-oneget
+    
     It "does something useful" {
         $true | should be $true
     }
 }
+
+Describe "mediocre" -tag common,pristine {
+
+    # make sure that oneget is loaded
+    import-oneget
+    
+    It "does something useful" {
+        $true | should be $true
+    }
+}
+
+
+
+Describe "sad" -tag pristine {
+    
+    It "does something useful" {
+        $true | should be $true
+    }
+}
+
+Describe "mad" -tag pristine {
+    
+    It "does something useful too" {
+        $true | should be $true
+    }
+}
+
 
 
