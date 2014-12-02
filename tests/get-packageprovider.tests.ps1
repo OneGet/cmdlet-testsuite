@@ -18,7 +18,7 @@ ipmo "$PSScriptRoot\utility.ps1"
 # ------------------------------------------------------------------------------
 # Actual Tests:
 
-Describe "get-packageprovider" -tag common {
+Describe "get-packageprovider" {
     # make sure that oneget is loaded
     import-oneget
     
