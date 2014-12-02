@@ -15,6 +15,8 @@
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
     [string]$moduleLocation = 'oneget',
+    [string]$tag = $null,
+    [string]$name = $null,
     [string]$action = 'test'
 )
 
@@ -132,27 +134,42 @@ try {
             $testPath =  "$PSScriptRoot\Tests"
             $output = "$PSScriptRoot\OneGet.Results.XML"
             $allTests = (Get-TestsByTag $testPath)
+            $options = ""
             
-            # run tests tagged 'pristine' in a seperate session for each one of them
-            foreach( $key in $allTests.Keys ) {
-                $keys = $key.Split(" ")
-                
-                if( $keys -contains "pristine" )  {
-                    foreach( $testName in $allTests[$key] ) {
-                    write-host "`n=========================================================="
-                        write-host -foregroundcolor yellow "Executing pristine test $testName in seperate session"
-                        . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -TestName '$testName'"
-                        
-                        $failed = (process-results $output) -or $failed
+             
+            if( $tag ) {
+                $options += " -Tag '$tag' "
+            }
+
+            
+            if(-not $tag -or $tag -eq "pristine")   {            
+                # run tests tagged 'pristine' in a seperate session for each one of them
+                foreach( $key in $allTests.Keys ) {
+                    $keys = $key.Split(" ")
+                    
+                    if( $keys -contains "pristine" )  {
+                        foreach( $testName in $allTests[$key] ) {
+                            if( -not $name -or $testName -match $name ) {
+                                write-host "`n=========================================================="
+                                write-host -foregroundcolor yellow "Executing pristine test $testName in seperate session"
+                                . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -TestName '$testName' $options"
+                                
+                                $failed = (process-results $output) -or $failed
+                            }
+                        }
                     }
                 }
             }
-            
+
+            if( $name ) {
+                $options += " -TestName '$name' "
+            }
+
             # Run using the powershell.exe so that the tests will load the OneGet
             # module using the version that gets specified (and not one that
             # may be in this session already)
-            . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -ExcludeTag pristine"
-
+            . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -ExcludeTag pristine $options"
+            
             $failed = (process-results $output) -or $failed
             
             write-host "`n`n`n=========================================================="

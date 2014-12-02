@@ -22,8 +22,9 @@ Describe "get-packageprovider" -tag common {
     # make sure that oneget is loaded
     import-oneget
     
-    It "does something useful" {
-        $true | should be $false
+    It "lists package providers installed" {
+        get-packageprovider | write-host
+        get-packageprovider | should be $false
     }
 }
 
