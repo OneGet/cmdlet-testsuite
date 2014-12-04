@@ -11,18 +11,28 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #  
-# ------------------ OneGet Test  ----------------------------------------------
-ipmo "$PSScriptRoot\utility.ps1"
 
-# ------------------------------------------------------------------------------
-# Actual Tests:
+$origdir = (pwd)
 
+cd $PSScriptRoot
 
-Describe "test name goes here" {
-    # make sure that oneget is loaded
-    import-oneget
-    
-    It "does something useful" {
-        $true | should be $true
+# where stuff is
+$root = resolve-path "$PSScriptRoot\.."
+
+try {
+    # quick check to see if port 80 is being listed to at all.
+    if(-not (((netstat -o -n -a ) -match "0.0.0.0:80").length -gt 0 ) ){
+        cd $origdir
+        return $false
     }
+    
+    # see if it's the sandbox server listing.
+    $r = wget http://localhost/about-sandbox
+    
+} catch {
+    cd $origdir
+    return $false
 }
+
+cd $origdir
+return $true

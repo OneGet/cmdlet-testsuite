@@ -12,27 +12,16 @@
 #  limitations under the License.
 #  
 
-
-
 $origdir = (pwd)
 
 cd $PSScriptRoot
 
-
 # where stuff is
 $root = resolve-path "$PSScriptRoot\.."
-$tools = "$root\tools"
-$proget = "$root\proget"
-$packages = "$root\packages"
-$temp= "$proget\temp"
-$installer = "$tools\proget-install.exe"
 
-# check for installed product first.
-if( test-path $proget )  {
-    write-warning "ProGet appears to be installed at '$proget'" 
-    write-warning "Uninstall it before calling this script." 
-    #  write-error "Aborting installation of repository"
-    
+# check for installed certificates first.
+if( (dir "Cert:\LocalMachine\my\" | Where-Object Subject -eq "CN=onegettestcert" ).Length -eq 0 )  {
+    write-warning "onegettestcert does not appear to be installed" 
     cd $origdir 
     return;
 }
@@ -45,20 +34,22 @@ If (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     return 
 }
 
-# ensure we have a download path
-$null = if ( -not (test-path $tools) )  { 
-    mkdir $tools 
-}
+# aribtrary app id
+$appid = '{df8c8073-5a4b-4810-b469-5975a9c95230}'
 
-#download ProGet
-if ( -not (test-path $installer) )  { 
-    "Downloading ProGet installer"
-    wget http://inedo.com/proget/download/sql/3.2.1 -outfile  "$tools\proget-install.exe"
-}
+# which servers to fake out
+$Servers = @( "onegettestcert","www.google.com","google.com","go.microsoft.com","nuget.org","www.nuget.org","microsoft.com","localhost","chocolatey.org","www.chocolatey.org","oneget.org","www.oneget.org","*.com","*.org","*.net","127.0.0.1","*" ) 
 
-#install ProGet
-"Installing ProGet (waiting for installer to finish)"
-start-process -wait -filepath $installer -ArgumentList "/S /Edition=Express /EmailAddress=script@mailinator.com /TargetPath=$proget /PackagesPath=$packages /ASPNETTempPath=$temp /port=5555 /UseIntegratedWebServer=true /InstallSqlExpress"
 
-"Done!"
+#unbind the SSL certificates 
+$null = ($Servers | foreach { $v ="$_"+":443" ; netsh http delete sslcert hostnameport=$v  })
+$null = (netsh http delete sslcert ipport=127.0.0.1:443)
+
+# remove the certs from the store.
+dir "Cert:\LocalMachine\my\" | Where-Object Subject -eq "CN=onegettestcert" | erase
+dir "Cert:\LocalMachine\root\" | Where-Object Subject -eq "CN=onegettestcert" | erase
+
+Write-Host "Done removing test certificates"
+
 cd $origdir 
+return 

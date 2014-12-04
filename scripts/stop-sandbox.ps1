@@ -11,18 +11,26 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #  
-# ------------------ OneGet Test  ----------------------------------------------
-ipmo "$PSScriptRoot\utility.ps1"
 
-# ------------------------------------------------------------------------------
-# Actual Tests:
+$origdir = (pwd)
 
+cd $PSScriptRoot
 
-Describe "test name goes here" {
-    # make sure that oneget is loaded
-    import-oneget
-    
-    It "does something useful" {
-        $true | should be $true
-    }
+# where stuff is
+$root = resolve-path "$PSScriptRoot\.."
+
+if( -not (.\test-sandbox.ps1) ) {
+    write-warning "Sandbox is not running" 
+    cd $origdir 
+    return;
 }
+
+try {
+    Write-Host Shutting down sandbox webserver.
+    $null = wget http://localhost/quit
+} catch {
+    
+}
+
+cd $origdir 
+return;

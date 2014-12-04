@@ -18,7 +18,8 @@ Param(
     [string]$tag = $null,
     [string]$name = $null,
     [string]$excludeTag = $null,
-    [string]$action = 'test'
+    [string]$action = 'test',
+    [switch]$enableSandbox
 )
 
 $origdir = (pwd)
@@ -68,8 +69,6 @@ function Get-TestsByTag{
     return $allDiscoveredTests;
 }
 
-
-
 function output-counts {
     param( 
         [int]$total,
@@ -117,6 +116,10 @@ try {
         'test' { 
             $failed = $false
             
+            if( $enableSandbox ) {
+                . $PSScriptRoot\scripts\start-sandbox
+            }
+            
             if( -not (test-path $PSScriptRoot\Pester\Vendor\packages) )  {
                 write-error "Run test-oneget -action setup first."
                 return $false
@@ -158,7 +161,12 @@ try {
                             
                                 write-host "`n=========================================================="
                                 write-host -foregroundcolor yellow "Executing pristine test $testName in seperate session"
-                                . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -TestName '$testName' $opts"
+                                
+                                if( $enableSandbox ) {
+                                    . $PSScriptRoot\tools\DnsShim /i:$PSScriptRoot\tools\hosts.txt /v powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -TestName '$testName' $opts"
+                                } else {
+                                    . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml -TestName '$testName' $opts"    
+                                }
                                 
                                 $failed = (process-results $output) -or $failed
                             }
@@ -180,7 +188,14 @@ try {
             # Run using the powershell.exe so that the tests will load the OneGet
             # module using the version that gets specified (and not one that
             # may be in this session already)
-            . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml $options"
+            # . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml $options"
+            
+            
+            if( $enableSandbox ) {
+                . $PSScriptRoot\tools\DnsShim /i:$PSScriptRoot\tools\hosts.txt /v powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml $options"
+            } else {
+                . powershell.exe "ipmo '$pester' ; Invoke-Pester -Path '$testPath' -OutputFile '$output' -OutputFormat NUnitXml $options"
+            }
             
             $failed = (process-results $output) -or $failed
             

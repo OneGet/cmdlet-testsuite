@@ -23,8 +23,7 @@ Describe "get-packageprovider" {
     import-oneget
     
     It "lists package providers installed" {
-        get-packageprovider | write-host
-        get-packageprovider | should be $false
+        $x = (get-packageprovider).name | should match "nuget"
     }
 }
 
@@ -32,8 +31,12 @@ Describe "happy" -tag common {
     # make sure that oneget is loaded
     import-oneget
     
-    It "does something useful" {
-        $true | should be $true
+    It "looks for packages in bootstrap" {
+        (find-package -provider bootstrap).Length | write-host 
+    }
+    
+    It "does something else" {
+        $false | should be $false
     }
 }
 
