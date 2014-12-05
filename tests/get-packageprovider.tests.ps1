@@ -12,7 +12,7 @@
 #  limitations under the License.
 #  
 # ------------------ OneGet Test  ----------------------------------------------
-ipmo "$PSScriptRoot\utility.ps1"
+ipmo "$PSScriptRoot\utility.psm1"
 
 
 # ------------------------------------------------------------------------------
