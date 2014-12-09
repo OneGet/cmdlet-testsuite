@@ -23,7 +23,7 @@ Describe "get-packageprovider" {
     import-oneget
     
     It "lists package providers installed" {
-        $x = (get-packageprovider -name).name | should match "nuget"
+        $x = (get-packageprovider -name "nuget").name | should match "nuget"
     }
 }
 
