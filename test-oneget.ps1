@@ -14,7 +14,7 @@
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param(
-    [string]$moduleLocation = 'oneget',
+	[string]$moduleLocation = 'oneget',
     [string]$tag = $null,
     [string]$name = $null,
     [string]$excludeTag = $null,
