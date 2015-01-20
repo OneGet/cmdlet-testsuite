@@ -231,7 +231,7 @@ Describe "Chocolatey: Get-Package" {
 
 	It "EXPECTED: Gets The 'ResolveAlias' Package After Installing And After Piping The Provider" {
 		(install-package -name "ResolveAlias" -Provider "chocolatey" -source $chocolateySource -force)
-		(get-packageprovider -name "chocolatey" | get-package).name | should be "ResolveAlias"
+		(get-packageprovider -name "chocolatey" | get-package "ResolveAlias" ).name | should be "ResolveAlias"
 		if (Test-Path -Path $destination\ResolveAlias*) {
 			(Remove-Item -Recurse -Force -Path $destination\ResolveAlias*)
 		}
