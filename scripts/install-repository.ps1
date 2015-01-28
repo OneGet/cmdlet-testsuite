@@ -58,8 +58,7 @@ if ( -not (test-path $installer) )  {
 
 #install ProGet
 "Installing ProGet (waiting for installer to finish)"
-$me = '"automated robot"'
-
+$me = '"test robot"'
 start-process -wait -filepath $installer -ArgumentList "/S /Edition=Express /EmailAddress=script@mailinator.com /FullName=$me /TargetPath=$proget /PackagesPath=$packages /ASPNETTempPath=$temp /port=5555 /UseIntegratedWebServer=true /InstallSqlExpress"
 
 "Done!"
