@@ -46,7 +46,7 @@ Describe "Find-Package" {
 	}
 
 	It "EXPECTED: Finds 'Zlib' Package After Piping The Provider" {
-		(get-packageprovider -name "nuget" | find-package -name zlib).name | should be "zlib"
+		(get-packageprovider -name "nuget" | find-package -name zlib -source $source ).name | should be "zlib"
 	}
 
 	It "EXPECTED: -FAILS- To Find Package Due To Too Long Of Name" {
