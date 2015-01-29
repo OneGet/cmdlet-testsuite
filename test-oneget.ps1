@@ -119,12 +119,12 @@ try {
             if( $enableSandbox ) {
                 . $PSScriptRoot\scripts\start-sandbox
             }
-            
+            <#
             if( -not (test-path $PSScriptRoot\Pester\Vendor\packages) )  {
                 write-error "Run test-oneget -action setup first."
                 return $false
             }
-            
+            #>
             if( -not (& $PSScriptRoot\scripts\test-pester.ps1) )  {
                 write-error "Run test-oneget -action setup first."
                 return $false
@@ -207,6 +207,7 @@ try {
         } 
         
         'setup' { 
+            <#
             # install ProGet
             if( (& $PSScriptRoot\scripts\test-proget.ps1) )  {
                 write-verbose "ProGet previously installed"
@@ -214,7 +215,8 @@ try {
                 write-verbose "Installing ProGet"
                 . $PSScriptRoot\scripts\install-repository.ps1
             }
-
+            #>
+            
             #make sure that pester is configured correctly
             if( (& $PSScriptRoot\scripts\test-pester.ps1) )  {
                 write-verbose "Pester appears correct"
