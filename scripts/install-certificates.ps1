@@ -42,7 +42,11 @@ $appid = '{df8c8073-5a4b-4810-b469-5975a9c95230}'
 $Servers = @( "onegettestcert","www.google.com","google.com","go.microsoft.com","nuget.org","www.nuget.org","microsoft.com","localhost","chocolatey.org","www.chocolatey.org","oneget.org","www.oneget.org","*.com","*.org","*.net","127.0.0.1","*" ) 
 
 # create the certificate
+if( $PSVersionTable.PSVersion.Major -gt 4 ) {
+    $cert = New-SelfSignedCertificate -DnsName $Servers -CertStoreLocation cert:\LocalMachine\My -Type SSLServerAuthentication
+} else {
 $cert = New-SelfSignedCertificate -DnsName $Servers -CertStoreLocation cert:\LocalMachine\My
+}
 
 $thumb = $cert.thumbprint
 

@@ -25,6 +25,10 @@ Describe "get-packageprovider" {
     It "lists package providers installed" {
         $x = (get-packageprovider -name "nuget").name | should match "nuget"
     }
+
+    It "EXPECTED:  Gets The 'Programs' Package Provider" {
+        $x = (get-packageprovider -name "Programs").name | should match "Programs"
+    }
 }
 
 Describe "happy" -tag common {
