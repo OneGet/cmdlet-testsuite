@@ -82,7 +82,7 @@ Describe "Chocolatey: Save-Package" {
 	import-oneget
 
 	it "EXPECTED: Saves 'Python' Package To Packages Directory" {
-		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -destinationpath $destination)
+		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -path $destination)
 		(test-path $destination\Python*) | should be $true
 		if (Test-Path $destination\python*) {
 			rm $destination\python*
@@ -93,7 +93,7 @@ Describe "Chocolatey: Save-Package" {
 		foreach ($x in $packageNames) {
 			foreach ($y in $minimumVersions) {
 				foreach ($z in $maximumVersions) {
-				(save-package -name $x -source $chocolateySource -Provider "chocolatey" -minimumversion $y -maximumversion $z -destinationpath $destination)
+				(save-package -name $x -source $chocolateySource -Provider "chocolatey" -minimumversion $y -maximumversion $z -Path $destination)
 				(Test-Path -Path $destination\$x*) | should be $true
 				if (Test-Path -Path $destination\$x*) {
 					rm $destination\$x*
@@ -104,7 +104,7 @@ Describe "Chocolatey: Save-Package" {
 	}
 
 	It "EXPECTED: Saves 'Python' Package After Having The Provider Piped" {
-	(find-package -Name "Python" -Provider "chocolatey" -source $chocolateySource | save-package -destinationpath $destination)
+	(find-package -Name "Python" -Provider "chocolatey" -source $chocolateySource | save-package -Path $destination)
 	(Test-Path -Path $destination\Python*) | should be $true
 	if (Test-Path -Path $destination\Python*) {
 		rm $destination\Python*
@@ -112,31 +112,31 @@ Describe "Chocolatey: Save-Package" {
 	}
 
 	It "EXPECTED: -FAILS- To Save Package Due To Too Long Of Name" {
-		(save-package -name $longName -Provider "chocolatey" -source $chocolateySource -destinationpath $destination -EA silentlycontinue) | should throw
+		(save-package -name $longName -Provider "chocolatey" -source $chocolateySource -Path $destination -EA silentlycontinue) | should throw
 	}
 
 	It "EXPECTED: -FAILS- To Save Package Due To Invalid Name" {
-		(save-package -name "1THIS_3SHOULD_5NEVER_7BE_9FOUND_11EVER" -Provider "chocolatey" -source $chocolateySource -destinationpath $destination -EA silentlycontinue) | should throw
+		(save-package -name "1THIS_3SHOULD_5NEVER_7BE_9FOUND_11EVER" -Provider "chocolatey" -source $chocolateySource -Path $destination -EA silentlycontinue) | should throw
 	}
 
 	It "EXPECTED: -FAILS- To Save Package Due To Negative Maximum Version Parameter" {
-		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -maximumversion "-1.5" -destinationpath $destination -EA silentlycontinue) | should throw
+		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -maximumversion "-1.5" -Path $destination -EA silentlycontinue) | should throw
 	}
 
 	It "EXPECTED: -FAILS- To Save Package Due To Negative Minimum Version Parameter" {
-		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -minimumversion "-1.5" -destinationpath $destination -EA silentlycontinue) | should throw
+		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -minimumversion "-1.5" -Path $destination -EA silentlycontinue) | should throw
 	}
 
 	It "EXPECTED: -FAILS- To Save Package Due To Negative Required Version Parameter" {
-		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -requiredversion "-1.5" -destinationpath $destination -EA silentlycontinue) | should throw
+		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -requiredversion "-1.5" -Path $destination -EA silentlycontinue) | should throw
 	}
 
 	It "EXPECTED: -FAILS- To Save Package Due To Out Of Bounds Required Version Parameter" {
-		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -minimumversion "1.0" -maximumversion "1.5" -requiredversion "2.0" -destinationpath $destination -EA silentlycontinue) | should throw
+		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -minimumversion "1.0" -maximumversion "1.5" -requiredversion "2.0" -Path $destination -EA silentlycontinue) | should throw
 	}
 
 	It "EXPECTED: -FAILS- To Save Package Due To Minimum Version Parameter Greater Than Maximum Version Parameter" {
-		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -minimumversion "1.5" -maximumversion "1.0" -destinationpath $destination -EA silentlycontinue) | should throw
+		(save-package -Name "Python" -Provider "chocolatey" -source $chocolateySource -minimumversion "1.5" -maximumversion "1.0" -Path $destination -EA silentlycontinue) | should throw
 	}
 }
 
