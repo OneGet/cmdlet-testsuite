@@ -89,10 +89,16 @@ function PullThru-File {
     
     write-host "Downloading remote file into local cache [$url]"
     
-    $r = wget -Uri $url -OutFile $localFile -passthru
-    $ct = $r.Headers["Content-Type"]
-    if( $ct ) {
-        set-content -Value $ct -Path "$localFile.ContentType"
+    try {
+        $r = wget -Uri $url -OutFile $localFile -passthru 
+        if( $r.Headers ) {
+            $ct = $r.Headers["Content-Type"]
+            if( $ct ) {
+                set-content -Value $ct -Path "$localFile.ContentType"
+            }
+        }
+    } catch { 
+    
     }
 }
 
@@ -201,4 +207,3 @@ if( $global:restart ) {
 } else {
     Write-Host "`nFinished."
 }
-
