@@ -20,7 +20,10 @@ Removes all installed OneGet providers from:
 
 #>
 function Remove-AllOneGetProviders {
-
+	rm $Env:ProgramFiles/OneGet/ProviderAssemblies/*.exe
+	rm $Env:LocalAppData/OneGet/ProviderAssemblies/*.exe
+	rm $Env:ProgramFiles/OneGet/ProviderAssemblies/*.dll
+	rm $Env:LocalAppData/OneGet/ProviderAssemblies/*.dll
 }
 
 
