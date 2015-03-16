@@ -18,7 +18,7 @@ ipmo "$PSScriptRoot\utility.psm1"
 # ------------------------------------------------------------------------------
 # Actual Tests:
 
-$source = "http://localhost:5555/nuget/Default"
+$source = "http://nuget.org/api/v2"
 $longName = "THISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERSTHISISOVER255CHARACTERS";
 $workingMaximumVersions = {"2.0", "2.5", "3.0"};
 $packageNames = @("Azurecontrib", "AWSSDK", "TestLib");
