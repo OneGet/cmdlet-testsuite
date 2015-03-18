@@ -215,6 +215,7 @@ Describe "Chocolatey: Get-Package" {
 		}
 	}
 
+<# this makes no sense
 	it "EXPECTED: Gets Various Packages With Various Version Parameters From Packages Directory After Installing" {
 		foreach ($x in $packageNames) {
 			foreach ($y in $minimumVersions) {
@@ -228,6 +229,7 @@ Describe "Chocolatey: Get-Package" {
 			}
 		} 
 	}
+#>
 
 	It "EXPECTED: Gets The 'ResolveAlias' Package After Installing And After Piping The Provider" {
 		(install-package -name "ResolveAlias" -Provider "chocolatey" -source $chocolateySource -force)
@@ -280,6 +282,7 @@ Describe "Chocolatey: Uninstall-Package" {
 		(Test-Path -Path $destination\ResolveAlias*) | should be $false
 	}
 
+<# makes no sense
 	it "EXPECTED: Uninstalls Various Packages With Various Versions From The Packages Directory" {
 		foreach ($x in $packageNames) {
 			foreach ($y in $minimumVersions) {
@@ -291,6 +294,8 @@ Describe "Chocolatey: Uninstall-Package" {
 			}
 		} 
 	}
+#>
+
 	It "EXPECTED: Uninstalls The'ResolveAlias' Package From The Packages Directory After Having The Package Piped" {
 		(install-package -name "ResolveAlias" -Provider "chocolatey" -source $chocolateySource -force)
 		(get-package -name "ResolveAlias" -Provider "chocolatey" | uninstall-package -force)

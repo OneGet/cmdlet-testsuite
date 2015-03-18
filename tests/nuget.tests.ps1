@@ -24,7 +24,9 @@ $workingMaximumVersions = {"2.0", "2.5", "3.0"};
 $packageNames = @("Azurecontrib", "AWSSDK", "TestLib");
 $minimumVersions = @("1.0", "1.3", "1.5");
 $maximumVersions = @("2.0", "2.5", "3.0");
-$destination = "C:\root\oneget\cmdlet-testsuite\packages\Default";
+$destination = "$env:tmp\nugettests"
+mkdir $destination
+
 $pkgSources = @("NUGETTEST101", "NUGETTEST202", "NUGETTEST303");
 
 
@@ -84,7 +86,7 @@ Describe Save-Package {
 
 	it "EXPECTED: Saves 'Zlib' Package To Packages Directory" {
 		(save-package -name "zlib" -provider "nuget" -source $source -Path $destination)
-		(test-path C:\root\oneget\cmdlet-testsuite\packages\Default\zlib*) | should be $true
+		(test-path $destination\zlib*) | should be $true
 		if (Test-Path $destination\zlib*) {
 			rm $destination\zlib*
 		}
@@ -216,6 +218,7 @@ Describe Get-Package {
 		}
 	}
 
+<# This test doesn't make any sense.
 	it "EXPECTED: Gets Various Packages With Various Version Parameters From Packages Directory After Installing" {
 		foreach ($x in $packageNames) {
 			foreach ($y in $minimumVersions) {
@@ -229,10 +232,11 @@ Describe Get-Package {
 			}
 		} 
 	}
+#>
 
 	It "EXPECTED: Gets The 'Adept.NugetRunner' Package After Installing And After Piping The Provider" {
 		(install-package -name "adept.nugetrunner" -provider "nuget" -destination $destination -source $source -force)
-		(get-packageprovider -name "nuget" | get-package -destination $destination).name | should be "adept.nugetrunner"
+		(get-packageprovider -name "nuget" | get-package "adept.nugetrunner" -destination $destination).name | should be "adept.nugetrunner"
 		if (Test-Path -Path $destination\adept.nugetrunner*) {
 			(Remove-Item -Recurse -Force -Path $destination\adept.nugetrunner*)
 		}
@@ -281,6 +285,7 @@ Describe Uninstall-Package {
 		(Test-Path -Path $destination\adept.nugetrunner*) | should be $false
 	}
 
+<# does not make sense
 	it "EXPECTED: Uninstalls Various Packages With Various Versions From The Packages Directory" {
 		foreach ($x in $packageNames) {
 			foreach ($y in $minimumVersions) {
@@ -292,6 +297,7 @@ Describe Uninstall-Package {
 			}
 		} 
 	}
+#>    
 	It "EXPECTED: Uninstalls The'Adept.Nugetrunner' Package From The Packages Directory After Having The Package Piped" {
 		(install-package -name "adept.nugetrunner" -provider "nuget" -destination $destination -source $source -force)
 		(get-package -name "adept.nugetrunner" -provider "nuget" -destination $destination | uninstall-package -force)
